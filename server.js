@@ -6,20 +6,23 @@ var stringify = require("csv-stringify/sync").stringify;
 
 const header = ["language", "region", "regularMarketPrice", "time"];
 let array = [];
+let j = 1;
 array.push(header);
 
 async function getData() {
   axios
-    .get(
-      "https://query1.finance.yahoo.com/v7/finance/quote?&symbols=USD"
-    )
+    .get("https://query1.finance.yahoo.com/v7/finance/quote?&symbols=USD")
     .then((response) => {
       const data = response.data.quoteResponse.result[0];
-      const time= new Date().toString()
+      const time = new Date().toString();
       array.push([data.language, data.region, data.regularMarketPrice, time]);
       const str = stringify(array);
 
-      const path = "./files/" + "CrytoCoin.csv";
+      if (array.length % 1000 == 0) {
+        j++;
+      }
+      const path = "./files/" + "CrytoCoin" + j + ".csv";
+
       if (!fs.existsSync("./files")) {
         fs.mkdirSync("./files");
       }
@@ -47,4 +50,4 @@ var server = app.listen(8081, function () {
   console.log("Example app listening at http://%s:%s", host, port);
 });
 
-setInterval(getData, 5000);
+setInterval(getData, 10);
